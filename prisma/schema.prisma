@@ -1,0 +1,78 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id            String       @id
+  name          String
+  email         String       @unique
+  emailVerified Boolean
+  image         String?
+  createdAt     DateTime
+  updatedAt     DateTime
+  sessions      Session[]
+  accounts      Account[]
+  servicos      Servico[]    @relation("UserServicos")
+}
+
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  token     String   @unique
+  createdAt DateTime
+  updatedAt DateTime
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Account {
+  id           String    @id
+  accountId    String
+  providerId   String
+  userId       String
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken  String?
+  refreshToken String?
+  idExpiresAt  DateTime?
+  password     String?
+  createdAt    DateTime
+  updatedAt    DateTime
+}
+
+model Verification {
+  id         String    @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime?
+  updatedAt  DateTime?
+}
+
+model Servico {
+  id           String        @id @default(cuid())
+  nome         String
+  descricao    String
+  preco        Decimal
+  imagemUrl    String?
+  userId       String
+  user         User          @relation("UserServicos", fields: [userId], references: [id], onDelete: Cascade)
+  agendamentos Agendamento[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+}
+
+model Agendamento {
+  id         String   @id @default(cuid())
+  dataHora   DateTime
+  clienteNome String
+  servicoId  String
+  servico    Servico  @relation(fields: [servicoId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now())
+}
