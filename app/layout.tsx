@@ -2,14 +2,14 @@ import "./globals.css";
 import React from "react";
 
 export const metadata = {
-  title: 'Glow Hair',
-  description: 'Sistema de gestão e agendamento para o Glow Hair',
-}
+  title: "Glow Hair",
+  description: "Elegância e modernidade em cuidados para cabelo",
+};
 
 export default function RootLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
   return (
     <html lang="pt">
