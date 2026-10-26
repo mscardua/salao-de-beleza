@@ -1,6 +1,9 @@
+import "./globals.css";
+import React from "react";
+
 export const metadata = {
-  title: 'Salão de Beleza',
-  description: 'Sistema de gestão para Salão de Beleza',
+  title: 'Glow Hair',
+  description: 'Sistema de gestão e agendamento para o Glow Hair',
 }
 
 export default function RootLayout({
@@ -10,7 +13,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="pt">
-      <body>{children}</body>
+      <body className="bg-[#0B132B] text-white min-h-screen antialiased">
+        {children}
+      </body>
     </html>
-  )
+  );
 }
