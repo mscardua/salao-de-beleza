@@ -7,15 +7,15 @@ generator client {
 }
 
 model Service {
-  id           String        @id @default(uuid())
-  name         String
-  description  String
-  price        Float
-  duration     Int
-  imageUrl     String?
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
-  appointments Appointment[] // Relação inversa adicionada no Appointment
+  id          String        @id @default(uuid())
+  name        String
+  description String?
+  price       Float
+  imageHome   String?       // Foto exibida no card da página inicial
+  imageDetail String?       // Foto exibida na página individual do serviço
+  appointments Appointment[]
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
 }
 
 model Appointment {

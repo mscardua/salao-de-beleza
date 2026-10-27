@@ -20,6 +20,10 @@ export default async function ServicePage({ params }: ServicePageProps) {
     notFound();
   }
 
+  // Se preferir usar propriedades separadas no banco (ex: imageDetail e imageHome)
+  // Pode usar: service.imageDetail || service.imageUrl
+  const serviceImage = service.imageUrl;
+
   return (
     <main className="min-h-screen bg-white text-slate-900 pb-12">
       <header className="flex justify-between items-center max-w-4xl mx-auto px-6 py-4 border-b border-slate-200 mb-8">
@@ -31,10 +35,10 @@ export default async function ServicePage({ params }: ServicePageProps) {
 
       <div className="max-w-4xl mx-auto px-6">
         <div className="bg-white border border-slate-200 shadow-sm rounded-xl overflow-hidden">
-          {service.imageUrl && (
-            <div className="relative w-full h-72 bg-slate-100">
+          {serviceImage && (
+            <div className="relative w-full h-72 md:h-96 bg-slate-100">
               <Image
-                src={service.imageUrl}
+                src={serviceImage}
                 alt={service.name}
                 fill
                 className="object-cover"

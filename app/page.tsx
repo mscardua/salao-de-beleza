@@ -54,11 +54,11 @@ export default async function Home() {
                 href={"/services/" + service.id}
                 className="bg-white border border-slate-200 shadow-sm rounded-xl overflow-hidden flex flex-col justify-between hover:border-pink-500/50 transition group"
               >
-                {/* Imagem do Serviço no topo do card */}
+                {/* Imagem do Serviço no topo do card (Usa imageHome) */}
                 <div className="relative w-full h-48 bg-slate-100">
-                  {service.imageUrl ? (
+                  {service.imageHome ? (
                     <Image
-                      src={service.imageUrl}
+                      src={service.imageHome}
                       alt={service.name}
                       fill
                       className="object-cover group-hover:scale-105 transition duration-300"
