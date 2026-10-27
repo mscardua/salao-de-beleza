@@ -7,34 +7,38 @@ generator client {
 }
 
 model Service {
-  id           String        @id @default(cuid())
+  id           String        @id @default(uuid())
   name         String
-  description  String?
+  description  String
   price        Float
   duration     Int
+  imageUrl     String?
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
-  appointments Appointment[]
+  appointments Appointment[] // Relação inversa adicionada no Appointment
 }
 
 model Appointment {
-  id          String   @id @default(cuid())
+  id          String   @id @default(uuid())
   clientName  String
   clientPhone String
   date        DateTime
-  serviceId   String
-  service     Service  @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  time        String?
+  status      String   @default("Pendente") // <--- Certifique-se de que esta linha existe
+  serviceId   String?
+  service     Service? @relation(fields: [serviceId], references: [id])
   createdAt   DateTime @default(now())
 }
 
 model User {
-  id            String    @id
+  id            String    @id @default(uuid())
   name          String
   email         String    @unique
-  emailVerified Boolean
+  password      String?    // <--- Adicionado o campo da palavra-passe
+  emailVerified Boolean?
   image         String?
-  createdAt     DateTime
-  updatedAt     DateTime
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
   sessions      Session[]
   accounts      Account[]
 }

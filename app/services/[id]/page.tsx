@@ -1,51 +1,71 @@
-import { prisma } from '../../../lib/prisma'
-import Link from 'next/link'
-import { notFound } from 'next/navigation'
+import Link from "next/link";
+import Image from "next/image";
+import { prisma } from "../../../lib/prisma";
+import { notFound } from "next/navigation";
 
-interface PageProps {
-  params: Promise<{ id: string }>
+interface ServicePageProps {
+  params: Promise<{
+    id: string;
+  }>;
 }
 
-export default async function ServiceDetailPage({ params }: PageProps) {
-  const { id } = await params
+export default async function ServicePage({ params }: ServicePageProps) {
+  const { id } = await params;
 
   const service = await prisma.service.findUnique({
     where: { id },
-  })
+  });
 
-  if (!service) return notFound()
+  if (!service) {
+    notFound();
+  }
 
   return (
-    <main className="min-h-screen bg-[#0B132B] py-12 px-4 sm:px-6 lg:px-8 text-white font-sans">
-      <div className="max-w-3xl mx-auto">
-        <Link href="/" className="text-[#D4AF37] hover:underline text-sm mb-6 inline-block">
-          ← Voltar para a página inicial
+    <main className="min-h-screen bg-white text-slate-900 pb-12">
+      <header className="flex justify-between items-center max-w-4xl mx-auto px-6 py-4 border-b border-slate-200 mb-8">
+        <Link href="/" className="text-pink-600 font-bold hover:underline text-sm">
+          ← Voltar para Início
         </Link>
+        <h1 className="text-xl font-bold tracking-wider text-pink-600">Glow Hair</h1>
+      </header>
 
-        <div className="bg-[#111827] border border-[#D4AF37]/40 rounded-2xl p-8 shadow-2xl">
-          {/* Espaço reservado para imagem exclusiva do serviço */}
-          <div className="w-full h-64 bg-[#1F2937] rounded-xl mb-6 overflow-hidden relative flex items-center justify-center border border-[#D4AF37]/25">
-            <span className="text-gray-400 text-sm italic">✨ Imagem Exclusiva - {service.name}</span>
-          </div>
+      <div className="max-w-4xl mx-auto px-6">
+        <div className="bg-white border border-slate-200 shadow-sm rounded-xl overflow-hidden">
+          {service.imageUrl && (
+            <div className="relative w-full h-72 bg-slate-100">
+              <Image
+                src={service.imageUrl}
+                alt={service.name}
+                fill
+                className="object-cover"
+              />
+            </div>
+          )}
 
-          <h1 className="text-3xl font-serif font-bold text-[#D4AF37] mb-4">{service.name}</h1>
-          <p className="text-gray-300 text-base mb-6 leading-relaxed">{service.description || 'Atendimento de alta qualidade e exclusividade.'}</p>
+          <div className="p-8">
+            <h2 className="text-2xl font-bold text-pink-600 mb-3">{service.name}</h2>
+            <p className="text-slate-600 mb-6 leading-relaxed">{service.description}</p>
 
-          <div className="flex items-center justify-between border-t border-gray-800 pt-6 mb-8">
-            <div>
-              <span className="text-2xl font-bold text-white">R$ {service.price.toFixed(2)}</span>
-              <span className="text-xs text-gray-400 block mt-1">⏱️ Duração: {service.duration} minutos</span>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-6 border-t border-slate-100">
+              <div>
+                <span className="text-2xl font-bold text-emerald-600 block">
+                  R$ {service.price.toFixed(2)}
+                </span>
+                <span className="text-sm text-slate-400">
+                  Duração estimada: {service.duration} minutos
+                </span>
+              </div>
+
+              <Link
+                href={"/booking?serviceId=" + service.id}
+                className="px-6 py-3 text-center font-medium bg-pink-500 text-white rounded-lg hover:bg-pink-400 transition"
+              >
+                Agendar este Serviço
+              </Link>
             </div>
           </div>
-
-          <Link
-            href="/"
-            className="block text-center w-full bg-gradient-to-r from-[#B8860B] via-[#D4AF37] to-[#B8860B] text-black font-semibold py-3.5 rounded-xl hover:opacity-90 transition-all shadow-lg"
-          >
-            Voltar ao Início para Agendar
-          </Link>
         </div>
       </div>
     </main>
-  )
+  );
 }
