@@ -11,8 +11,9 @@ model Service {
   name        String
   description String?
   price       Float
-  imageHome   String?       // Foto exibida no card da página inicial
-  imageDetail String?       // Foto exibida na página individual do serviço
+  imageHome   String?       // Foto do card da home
+  imageDetail String?       // Foto principal de detalhe (opcional)
+  images      String[]      // <--- Novo campo para a galeria (até 6 imagens)
   appointments Appointment[]
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt

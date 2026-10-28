@@ -47,15 +47,15 @@ export default async function Home() {
         {services.length === 0 ? (
           <p className="text-slate-500">Nenhum serviço registado de momento.</p>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {services.map((service) => (
               <Link
                 key={service.id}
                 href={"/services/" + service.id}
                 className="bg-white border border-slate-200 shadow-sm rounded-xl overflow-hidden flex flex-col justify-between hover:border-pink-500/50 transition group"
               >
-                {/* Imagem do Serviço no topo do card (Usa imageHome) */}
-                <div className="relative w-full h-48 bg-slate-100">
+                {/* Imagem do Serviço no topo do card (Altura h-64) */}
+                <div className="relative w-full h-64 bg-slate-100">
                   {service.imageHome ? (
                     <Image
                       src={service.imageHome}
@@ -81,9 +81,6 @@ export default async function Home() {
                     <div>
                       <span className="text-lg font-semibold text-emerald-600">
                         R$ {service.price.toFixed(2)}
-                      </span>
-                      <span className="text-xs text-slate-400 block">
-                        {service.duration} mins
                       </span>
                     </div>
 
