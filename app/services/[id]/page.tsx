@@ -1,8 +1,35 @@
 import Image from "next/image";
 import Link from "next/link";
 import { prisma } from "../../../lib/prisma";
-import { notFound } from "next/navigation";
-import BookingModal from "../../components/BookingModal";
+import { notFound, redirect } from "next/navigation";
+
+async function handleBooking(formData: FormData) {
+  "use server";
+
+  const serviceId = formData.get("serviceId") as string;
+  const clientName = formData.get("clientName") as string;
+  const clientPhone = formData.get("clientPhone") as string;
+  const dateStr = formData.get("date") as string;
+  const timeStr = formData.get("time") as string;
+
+  if (!clientName || !clientPhone || !dateStr || !serviceId) {
+    return;
+  }
+
+  // Cria o agendamento alinhado exatamente ao model Appointment
+  await prisma.appointment.create({
+    data: {
+      serviceId,
+      clientName,
+      clientPhone,
+      date: new Date(dateStr),
+      time: timeStr || null,
+      status: "Pendente",
+    },
+  });
+
+  redirect("/dashboard?sucesso=true");
+}
 
 export default async function ServiceDetailPage({
   params,
@@ -36,35 +63,98 @@ export default async function ServiceDetailPage({
       </header>
 
       <div className="max-w-5xl mx-auto px-6">
-        {/* Foto Principal de Detalhe (compacta, h-72, sem cortes) */}
-        <div className="relative w-full h-72 bg-slate-100 rounded-2xl overflow-hidden mb-8 shadow-sm">
-          {service.imageDetail ? (
+        {/* Informações Principais */}
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-pink-600 mb-2">{service.name}</h1>
+          <p className="text-slate-600 text-lg mb-4">{service.description}</p>
+          <span className="text-2xl font-semibold text-emerald-600">
+            R$ {service.price.toFixed(2)}
+          </span>
+        </div>
+
+        {/* Galeria de Imagens (Suporta tanto o array images como imageDetail) */}
+        {service.images && service.images.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
+            {service.images.map((imgUrl, index) => (
+              <div key={index} className="relative w-full h-80 bg-slate-100 rounded-2xl overflow-hidden shadow-sm">
+                <Image
+                  src={imgUrl}
+                  alt={`${service.name} - Imagem ${index + 1}`}
+                  fill
+                  className="object-cover"
+                />
+              </div>
+            ))}
+          </div>
+        ) : service.imageDetail ? (
+          <div className="relative w-full h-80 bg-slate-100 rounded-2xl overflow-hidden shadow-sm mb-12">
             <Image
               src={service.imageDetail}
               alt={service.name}
               fill
               className="object-cover"
-              priority
             />
-          ) : (
-            <div className="flex items-center justify-center h-full text-slate-400 text-sm">
-              Sem imagem de detalhe configurada
+          </div>
+        ) : null}
+
+        {/* Formulário que salva no banco para o Painel/Dashboard */}
+        <div className="border-t border-slate-200 pt-8 max-w-xl">
+          <h2 className="text-xl font-bold text-slate-800 mb-4">Agendar Este Serviço</h2>
+
+          <form action={handleBooking} className="space-y-4 bg-slate-50 p-6 rounded-2xl border border-slate-200">
+            <input type="hidden" name="serviceId" value={service.id} />
+
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-1">Seu Nome</label>
+              <input
+                type="text"
+                name="clientName"
+                required
+                placeholder="Ex: Maria Silva"
+                className="w-full border border-slate-300 rounded-xl p-3 text-sm bg-white focus:outline-none focus:border-pink-500"
+              />
             </div>
-          )}
-        </div>
 
-        {/* Informações Reais do Banco de Dados */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-pink-600 mb-2">{service.name}</h1>
-          <p className="text-slate-600 text-lg mb-4">{service.description}</p>
-          <span className="text-2xl font-semibold text-emerald-600">
-            R$ {Number(service.price).toFixed(2)}
-          </span>
-        </div>
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-1">Seu Telefone / WhatsApp</label>
+              <input
+                type="text"
+                name="clientPhone"
+                required
+                placeholder="Ex: (11) 99999-9999"
+                className="w-full border border-slate-300 rounded-xl p-3 text-sm bg-white focus:outline-none focus:border-pink-500"
+              />
+            </div>
 
-        {/* Botão e Janela Modal de Agendamento */}
-        <div className="border-t border-slate-200 pt-6">
-          <BookingModal serviceId={service.id} serviceName={service.name} />
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Data</label>
+                <input
+                  type="date"
+                  name="date"
+                  required
+                  className="w-full border border-slate-300 rounded-xl p-3 text-sm bg-white focus:outline-none focus:border-pink-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Horário</label>
+                <input
+                  type="time"
+                  name="time"
+                  required
+                  className="w-full border border-slate-300 rounded-xl p-3 text-sm bg-white focus:outline-none focus:border-pink-500"
+                />
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              className="w-full py-3 bg-pink-500 text-white font-medium rounded-xl hover:bg-pink-400 transition shadow-sm cursor-pointer mt-2"
+            >
+              Confirmar e Salvar Agendamento
+            </button>
+          </form>
         </div>
       </div>
     </main>
