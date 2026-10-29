@@ -28,16 +28,21 @@ async function handleBooking(formData: FormData) {
     },
   });
 
-  redirect("/dashboard?sucesso=true");
+  // Redireciona para a mesma página do serviço com o aviso de sucesso
+  redirect(`/services/${serviceId}?sucesso=true`);
 }
 
 export default async function ServiceDetailPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ sucesso?: string }>;
 }) {
   const resolvedParams = await params;
+  const resolvedSearch = await searchParams;
   const serviceId = resolvedParams.id;
+  const isSuccess = resolvedSearch.sucesso === "true"; // <- Variável de sucesso ativa
 
   const service = await prisma.service.findUnique({
     where: { id: serviceId },
@@ -79,7 +84,7 @@ export default async function ServiceDetailPage({
               <div key={index} className="relative w-full h-80 bg-slate-100 rounded-2xl overflow-hidden shadow-sm">
                 <Image
                   src={imgUrl}
-                  alt={`${service.name} - Imagem ${index + 1}`}
+                  alt={`${service.name} Imagem ${index + 1}`}
                   fill
                   className="object-cover"
                 />
@@ -100,6 +105,13 @@ export default async function ServiceDetailPage({
         {/* Formulário que salva no banco para o Painel/Dashboard */}
         <div className="border-t border-slate-200 pt-8 max-w-xl">
           <h2 className="text-xl font-bold text-slate-800 mb-4">Agendar Este Serviço</h2>
+
+          {/* AVISO DE SUCESSO */}
+          {isSuccess && (
+            <div className="mb-6 p-4 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-xl text-sm font-medium">
+              ✨ Agendamento realizado com sucesso! O salão já recebeu o seu pedido.
+            </div>
+          )}
 
           <form action={handleBooking} className="space-y-4 bg-slate-50 p-6 rounded-2xl border border-slate-200">
             <input type="hidden" name="serviceId" value={service.id} />
