@@ -9,4 +9,7 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
   },
+  // Força o Better Auth a ler diretamente do ambiente com segurança
+  secret: process.env.BETTER_AUTH_SECRET,
+  baseURL: process.env.BETTER_AUTH_URL,
 });
